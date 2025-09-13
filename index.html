@@ -1,56 +1,245 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Георгий Атаев</title>
+  <link rel="icon" type="image/png" href="logop.png">
+  <style>
+    @font-face {
+      font-family: 'Nielot';
+      src: url('Lindemann.otf') format('truetype');
+      font-weight: 500 !important; 
+      font-style: normal !important;
+    }
 
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
+    body {
+      margin: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100vh;
+      padding-left: 60px;
+      text-align: left;
+    }
+    header {
+      margin-top: 40px;
+    }
+    h1 {
+      font-family: 'Nielot', sans-serif;
+      font-size: 5rem;
+      color: #ffffff;
+      margin: 0 0 20px 0;
+      text-shadow: 2px 2px 8px rgba(255,255,255,0.4);
+      letter-spacing: 4px;
+    }
+    h2 {
+      font-family: 'Nielot', sans-serif;
+      font-size: 3rem;
+      color: #ffffff;
+      margin: 0 0 0 2px;
+      text-shadow: 1px 1px 6px rgba(255,255,255,0.3);
+      letter-spacing: 4px;
+    }
+    .quote {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3rem;
+      margin: 0 0 250px 0;
+      color: #ffffff;
+      text-shadow: 1px 1px 6px rgba(255,255,255,0.3);
+      align-self: flex-start;
+      white-space: normal;
+      overflow: hidden;
+    }
+
+    .quote::after {
+      content: "";
+      display: inline-block;
+      width: 2px;
+      height: 1.2em;
+      background: #ffffff;
+      margin-left: 6px;
+      vertical-align: bottom;
+      animation: blink 1s steps(1) infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+    footer {
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      display: flex;
+      gap: 20px;
+    }
+    footer a {
+      color: #ffffff;
+      font-size: 2.3rem;
+      text-decoration: none;
+      text-shadow: 1px 1px 4px rgba(255,255,255,0.2);
+      transition: color 0.3s;
+    }
+    footer a:hover {
+      color: #cccccc;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-
-  <link rel="stylesheet" href="style.css">
-
 </head>
-
 <body>
-
-  <header class="header">
-    <span class="logo">George Ataev</span>
+  <header>
+    <h1>George Ataev | Георгий Атаев</h1>
+    <h2>Fullstack Developer | HSE student</h2>
   </header>
 
-  <div class="hero">
-    <div class="container hero__container">
-      <div class="hero__about">
-        <h1 class="hero__title">Fullstack Разработчик</h1>
-        <h2 class="hero__subtitle">Атаев Георгий</h2>
-        <p class="hero__description">
-          Студент МИЭМ НИУ ВШЭ
-        </p>
+  <p class="quote" id="quote"></p>
+
+  <footer>
+    <a href="Резюме.pdf" target="_blank"><i class='bx bx-file'></i></a>
+    <a href="mailto:gaataev@edu.hse.ru"><i class='bx bx-envelope'></i></a>
+    <a href="https://github.com/mersibo" target="_blank"><i class='bx bxl-github'></i></a>
+    <a href="https://t.me/prettyfacegoat" target="_blank"><i class='bx bxl-telegram'></i></a>
+  </footer>
+
+  <script>
+    const quotes = [
+      "Нет ничего опаснее невежественного \nдруга, мудрый враг предпочтительнее.",
+      "Rien n'est si dangereux qu' un ignorant ami ;\nMieux vaudrait un sage ennemi.",
+      "無知な友人ほど危険なものはない。\n賢い敵のほうがよっぽどましだ。"
+    ];
+
+    let quoteIndex = 0;
+    let charIndex = 0;
+    let buffer = '';
+    const quoteElement = document.getElementById("quote");
+
+    const typingSpeed = 70; 
+    const erasingSpeed = 40;
+    const delayBetweenQuotes = 1800;
+
+    let lastTime = 0;
+    let mode = "typing"; 
+    let waitStart = 0;
+
+    function renderBuffer() {
+      quoteElement.innerHTML = buffer.replace(/\n/g, '<br>');
+    }
+
+    function animateQuote(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const delta = timestamp - lastTime;
+
+      if (mode === "typing" && delta > typingSpeed) {
+        const current = quotes[quoteIndex];
+        if (charIndex < current.length) {
+          buffer += current.charAt(charIndex);
+          charIndex++;
+          renderBuffer();
+        } else {
+          mode = "waiting";
+          waitStart = timestamp;
+        }
+        lastTime = timestamp;
+      }
+
+      else if (mode === "waiting" && timestamp - waitStart > delayBetweenQuotes) {
+        mode = "erasing";
+        lastTime = timestamp;
+      }
+
+      else if (mode === "erasing" && delta > erasingSpeed) {
+        if (charIndex > 0) {
+          buffer = buffer.slice(0, -1);
+          charIndex--;
+          renderBuffer();
+        } else {
+          quoteIndex = (quoteIndex + 1) % quotes.length;
+          buffer = '';
+          mode = "typing";
+        }
+        lastTime = timestamp;
+      }
+
+      requestAnimationFrame(animateQuote);
+    }
 
 
-        <div class="hero__links">
-          <a class="hero__link" href="https://vk.com/osetin_2004" target="_blank"><i class='bx bxl-vk'></i></a>
-          <a class="hero__link" href="https://t.me/ossetin2004"><i class='bx bxl-telegram'></i></a>
-          <a class="hero__link" href="https://github.com/mersibo"><i class='bx bxl-github'></i></a>
-          <a class="hero__link" href="Резюме.pdf"><i class='bx bxs-file-pdf'></i></a>
-        </div>
+    const pageTitles = [
+      "Георгий Атаев",
+      "George Ataev"
+    ];
 
+    let titleIndex = 0;
+    let titleCharIndex = 0;
+    let titleBuffer = '';
 
-      </div>
+    const titleTypingSpeed = 250;
+    const titleDelayBetween = 1800;
 
-      <div class="hero__box">
-        <img class="hero__box-img" src="photo.jpg" alt="">
-      </div>
+    let titleLastTime = 0;
+    let titleMode = "typing";
+    let titleWaitStart = 0;
+    let pauseTitleAnimation = false;
 
-    </div>
+    function animateTitle(timestamp) {
+      if (!titleLastTime) titleLastTime = timestamp;
+      const delta = timestamp - titleLastTime;
 
-  </div>
+      if (titleMode === "typing" && delta > titleTypingSpeed) {
+        const current = pageTitles[titleIndex];
+        if (titleCharIndex < current.length) {
+          titleBuffer += current.charAt(titleCharIndex);
+          titleCharIndex++;
+          document.title = titleBuffer;
+        } else {
+          titleMode = "waiting";
+          titleWaitStart = timestamp;
+        }
+        titleLastTime = timestamp;
+      }
 
+      else if (titleMode === "waiting" && timestamp - titleWaitStart > titleDelayBetween) {
+        titleMode = "erasing";
+        titleLastTime = timestamp;
+      }
 
+      else if (titleMode === "erasing" && delta > 250) {
+        if (titleCharIndex > 0) {
+          titleBuffer = titleBuffer.slice(0, -1);
+          titleCharIndex--;
+          document.title = titleBuffer;
+        } else {
+          titleIndex = (titleIndex + 1) % pageTitles.length;
+          titleBuffer = '';
+          titleMode = "typing";
+        }
+        titleLastTime = timestamp;
+      }
 
+      requestAnimationFrame(animateTitle);
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        pauseTitleAnimation = true;
+        document.title = pageTitles[titleIndex]; 
+      } else {
+        pauseTitleAnimation = false;
+        titleBuffer = '';
+        titleCharIndex = 0;
+        titleMode = "typing";
+        titleLastTime = 0;
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      requestAnimationFrame(animateQuote);
+      requestAnimationFrame(animateTitle);
+    });
+  </script>
 </body>
-
 </html>
